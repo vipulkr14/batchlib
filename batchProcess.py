@@ -1,5 +1,4 @@
 from concurrent.futures import ThreadPoolExecutor
-import sys
 from pympler import asizeof
 
 def split_array(arr, chunk_size):
@@ -18,7 +17,7 @@ def worker(chunk):
             chunk.remove(s)
     #print(chunk)
     if asizeof.asizeof(chunk) > max_batch_size:
-        """if batch size is more than the minit, furhter processing it to smaller batches starting with half the length"""
+        """if batch size is more than the limit, furhter processing it to smaller batches starting with half the length"""
         chunks=split_array(chunk, (len(chunk)//2)+1)
         with ThreadPoolExecutor(max_workers=max_thread_pool) as executor:
             results = list(executor.map(worker,chunks))
