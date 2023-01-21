@@ -1,5 +1,5 @@
 import pytest
-from batchProcess import batch_process
+from batch_process import batch_process
 
 
 def test_batch_output():
