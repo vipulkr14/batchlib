@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from pympler import asizeof
+from constants import max_batch_size, max_record_size, max_thread_pool, batch_size
 
 def split_array(arr, chunk_size):
     """Splits the given array arr into batches of size defined by chunk_size"""
@@ -12,9 +13,9 @@ def worker(chunk):
     """worker method to filter the larger records and further divide the batch if chunk size is more than the limit"""
     #processing
     result = []
-    for s in chunk:
-        if asizeof.asizeof(s) > max_record_size:
-            chunk.remove(s)
+    for record in chunk:
+        if asizeof.asizeof(record) > max_record_size:
+            chunk.remove(record)
     #print(chunk)
     if asizeof.asizeof(chunk) > max_batch_size:
         """if batch size is more than the limit, furhter processing it to smaller batches starting with half the length"""
@@ -41,18 +42,15 @@ def open_nested_list(list_obj):
 
 
 def batch_process(arr):
-    chunk_size = 3
-    chunks=split_array(arr, chunk_size)
+    chunks=split_array(arr, batch_size)
     res = []
     with ThreadPoolExecutor(max_workers=max_thread_pool) as executor:
         results = list(executor.map(worker,chunks))
         res = open_nested_list(results)
         print(res)
+    return res
 
-max_record_size = 56 #change it to 1 MB equivalent of bytes
-max_batch_size = 220 #change it to 5 MB equivalent of bytes
-max_thread_pool = 4 #max number of threads
 
-arr = ['qwerty','pofgvffiuyt','zxsw','qw','qwe','mnbvc','mnbvc','lkjh','lkijuh','plmnbvcx','lokij','lokijn','lkj','po','lkjn','poiu','ag','lo','ytg','qw','poi']
+arr = ['qwert','pofgvffiuyt','zxsw','qw','qwe','mnbvc','mnbvc','lkjh','lkijuh','plmnbvcx','lokij','lokijn','lkj','po','lkjn','poiu','ag','lo','ytg','qw','poi']
 
 batch_process(arr)
